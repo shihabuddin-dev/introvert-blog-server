@@ -52,6 +52,21 @@ async function run() {
       res.send(result);
     });
 
+    // edit blog
+    app.put("/blog/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedBlog = req.body;
+      const updateDoc = { $set: updatedBlog };
+      const result = await blogsCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+
     // delete blog
     app.delete("/blog/:id", async (req, res) => {
       const id = req.params.id;
