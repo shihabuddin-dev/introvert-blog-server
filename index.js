@@ -27,7 +27,13 @@ async function run() {
 
     // get blogs data
     app.get("/blogs", async (req, res) => {
-      const result = await blogsCollection.find().toArray();
+      // search
+      const { searchParams } = req.query;
+      let query = {};
+      if (searchParams) {
+        query = { title: { $regex: searchParams, $options: "i" } };
+      }
+      const result = await blogsCollection.find(query).toArray();
       res.send(result);
     });
 
@@ -43,6 +49,14 @@ async function run() {
     app.post("/blogs", async (req, res) => {
       const newBlog = req.body;
       const result = await blogsCollection.insertOne(newBlog);
+      res.send(result);
+    });
+
+    // delete blog
+    app.delete("/blog/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const result = await blogsCollection.deleteOne(filter);
       res.send(result);
     });
 
